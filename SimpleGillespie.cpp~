@@ -1,0 +1,159 @@
+//
+//  SimpleGillespie.cpp
+//  
+//
+//  Created by Zahedeh Bashardanesh on 10/17/12.
+//
+//
+
+//#include "SimpleGillespie.h"
+#include <stdio.h>
+#include <iostream.h>
+#include <vector>
+#include <cmath>
+#include <sstream>
+#include <fstream>
+#include "include/mersenne/MersenneTwister.h"
+#define V 8
+#define nMax 80
+using namespace std;
+#include "st.h"
+//#include "aleatoire.h"
+//#include "etime.h"
+//#define nplot 100000000
+//#define iterm 50000000
+//#define n 220
+//#define M 150
+//const double  dt=0.01;
+/*dt is the time step*/
+/* some constatnts for the algorithm*/
+
+//long idum,nn;
+MTRand *R;
+
+int main(){
+    int ii,jj;
+    long int n=20;
+    double k1=.2;
+    double k2=1.75;
+    double kD=1;
+    double lambda = 1;
+    double iV = 1./(V*kD);
+    double randt, randr;
+    double t=0.0, tau=0.0, fT=1e10;
+    double C, C4, iC4;
+    double p1, p2, sump;
+    double p[nMax];
+    
+    R = new MTRand();
+    
+//    time_t seconds,seconds1;
+//    time(&seconds);
+//    srand(seconds);
+//    idum=rand();
+//    cout<< idum<<endl;
+//    idum=-12375;
+    
+    
+    char filename[132];
+//    sprintf(filename, "1CData.dat");
+        sprintf(filename, "1CData1.dat");
+    ofstream myfile(filename);
+    
+    while (t<fT){
+        C = n*iV;
+        C4 = C*C*C*C;
+        iC4 = 1./(1+C4);
+        
+        p1 = lambda*n;
+        p2 =V*k1 + V*k2*C4*iC4;
+        sump = p1+p2;
+
+        do { /* Generate random number*/
+            randt = 1.0-R->randExc();
+
+        } while (!((randt>0)&&(randt<1)));
+
+        
+        do{
+             randr = 1.0-R->randExc();
+
+            
+        } while(!((randr>0)&& (randr<1)));
+        
+        
+
+        
+        
+        tau = -log(randt)/sump; /*Increasing the time*/
+        t = t + tau;
+        if(n<nMax){p[n]=p[n]+tau;}
+        sump = sump*randr;
+
+        if (sump<p1) {      /*Changing number of molecule*/
+            n=n-1;
+        } else {
+			n=n+1;
+		}
+        }
+    for (ii=0 ; ii<nMax; ii++ )
+    {myfile << ii <<SP<<p[ii]<<endl;
+    }
+
+}
+
+
+//
+//#include "etimev.c"
+//#define IA 16807
+//#define IM 2147483647
+//#define AM (1.0/IM)
+//#define IQ 127773
+//#define IR 2836
+//#define NTAB 32
+//#define NDIV (1+(IM-1)/NTAB)
+//#define EPS 1.2e-7
+//#define RNMX (1.0-EPS)
+//#define MBIG 1000000000
+//#define MSEED 161803398
+//#define MZ 0
+//#define FAC (1.0/MBIG)
+//
+//float ran3(long *idum)
+//{
+//	static int inext,inextp;
+//	static long ma[56];
+//	static int iff=0;
+//	long mj,mk;
+//	int i,ii,k;
+//	
+//	if (*idum < 0 || iff == 0) {
+//		iff=1;
+//		mj=MSEED-(*idum < 0 ? -*idum : *idum);
+//		mj %= MBIG;
+//		ma[55]=mj;
+//		mk=1;
+//		for (i=1;i<=54;i++) {
+//			ii=(21*i) % 55;
+//			ma[ii]=mk;
+//			mk=mj-mk;
+//			if (mk < MZ) mk += MBIG;
+//			mj=ma[ii];
+//		}
+//		for (k=1;k<=4;k++)
+//			for (i=1;i<=55;i++) {
+//				ma[i] -= ma[1+(i+30) % 55];
+//				if (ma[i] < MZ) ma[i] += MBIG;
+//			}
+//		inext=0;
+//		inextp=31;
+//		*idum=1;
+//	}
+//	if (++inext == 56) inext=1;
+//	if (++inextp == 56) inextp=1;
+//	mj=ma[inext]-ma[inextp];
+//	if (mj < MZ) mj += MBIG;
+//	ma[inext]=mj;
+//	return mj*FAC;
+//}
+
